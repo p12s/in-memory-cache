@@ -1,4 +1,4 @@
-name: Create Release
+name: create-release
 
 on:
   push:
@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: test-print-env
+        run: |
+          echo "github.ref: ${{ github.ref }}"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
