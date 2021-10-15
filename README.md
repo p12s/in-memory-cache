@@ -17,22 +17,31 @@ Therefore, this self-written cache is not optimal, I would not recommend using i
 ## Example
 Installation: 
 ```
-go get -u https://github.com/p12s/in-memory-cache
+go get -u github.com/p12s/in-memory-cache
 ```
 Использование:
 ```
-cache := cache.New()
+package main
 
-userId := cache.Get("userId")   // if the key doesn't exist, returns "nil"
-fmt.Println(userId)
+import (
+	"fmt"
+	cache "github.com/p12s/in-memory-cache"
+)
 
-cache.Set("userId", 42)         // if the key already exists, it will overwrite
-userId := cache.Get("userId")
-fmt.Println(userId)
+func main() {
+	cache := cache.NewCache()
 
-cache.Delete("userId")
-userId := cache.Get("userId")
-fmt.Println(userId)
+	userId := cache.Get("userId") // if the key doesn't exist, returns "nil"
+	fmt.Println(userId)
+
+	cache.Set("userId", 42) // if the key already exists, it will overwrite
+	userId = cache.Get("userId")
+	fmt.Println(userId)
+
+	cache.Delete("userId")
+	userId = cache.Get("userId")
+	fmt.Println(userId)
+}
 ```
 
 
