@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-	cache := cache.NewCache()
+	cache := cache.New()
 
 	userId := cache.Get("userId") // if the key doesn't exist, returns "nil"
 	fmt.Println(userId) 		// <nil>
