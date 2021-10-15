@@ -6,7 +6,7 @@ type Cache struct {
 }
 
 // Constructor
-func NewCache() *Cache {
+func New() *Cache {
 	return &Cache{
 		items: make(map[string]interface{}),
 	}

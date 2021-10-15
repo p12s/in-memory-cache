@@ -7,8 +7,8 @@ import (
 )
 
 // TestNewCache - in-memory cache testing
-func TestNewCache(t *testing.T) {
-	cache := NewCache()
+func TestNew(t *testing.T) {
+	cache := New()
 
 	tests := []struct {
 		name, key string
