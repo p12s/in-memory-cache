@@ -1,7 +1,8 @@
 ![License](https://img.shields.io/github/license/p12s/in-memory-cache)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/p12s/in-memory-cache?style=plastic)
-
-
+[![Codecov](https://codecov.io/gh/p12s/in-memory-cache/branch/master/graph/badge.svg?token=0VP8CWJB7A)](https://codecov.io/gh/p12s/in-memory-cache)
+[![Go Report Card](https://goreportcard.com/badge/github.com/p12s/in-memory-cache)](https://goreportcard.com/report/github.com/p12s/in-memory-cache)
+<img src="https://github.com/p12s/in-memory-cache/workflows/lint-build/badge.svg?branch=master">
 
 # In-memory cache
 Task description is [here](task.md)
