@@ -1,7 +1,7 @@
 name: create-release
 
 env:
-  VERSION: "v1.0.1" # по-хорошему надо брать из названия ветки: ${{ github.ref }}
+  VERSION: "v1.0.2" # по-хорошему надо брать из названия ветки: ${{ github.ref }}
 
 on:
   push:
