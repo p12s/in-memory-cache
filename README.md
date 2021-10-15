@@ -19,7 +19,7 @@ Installation:
 ```
 go get -u github.com/p12s/in-memory-cache
 ```
-Использование:
+Using:
 ```
 package main
 
@@ -32,19 +32,14 @@ func main() {
 	cache := cache.NewCache()
 
 	userId := cache.Get("userId") // if the key doesn't exist, returns "nil"
-	fmt.Println(userId)
+	fmt.Println(userId) 		// <nil>
 
 	cache.Set("userId", 42) // if the key already exists, it will overwrite
 	userId = cache.Get("userId")
-	fmt.Println(userId)
+	fmt.Println(userId)	// 42
 
 	cache.Delete("userId")
 	userId = cache.Get("userId")
-	fmt.Println(userId)
+	fmt.Println(userId)		// <nil>
 }
 ```
-
-
-Maps are backed by hash tables.
-Add, get and delete operations run in constant expected time. The time complexity for the add operation is amortized.
-The comparison operators == and != must be defined for the key type.
