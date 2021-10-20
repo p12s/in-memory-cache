@@ -24,10 +24,7 @@ func (c *Cache) Set(key string, item interface{}) {
 
 // Get - get value from cache
 func (c *Cache) Get(key string) interface{} {
-	if item, ok := c.items[key]; ok {
-		return item
-	}
-	return nil
+	return c.items[key]
 }
 
 // Delete - remove value from cache
