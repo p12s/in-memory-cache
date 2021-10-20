@@ -2,7 +2,7 @@
 .SILENT:
 
 test:
-	env GO111MODULE=on go test --short -coverprofile=cover.out -v ./...
+	env GO111MODULE=on go test --short -race -coverprofile=cover.out -v ./...
 	make test.coverage
 
 test.coverage:
@@ -10,3 +10,6 @@ test.coverage:
 
 lint:
 	golangci-lint run
+
+bench:
+	env GO111MODULE=on go test -bench=. -cpu=8 -benchmem -cpuprofile=cpu.out -memprofile=mem.out .
