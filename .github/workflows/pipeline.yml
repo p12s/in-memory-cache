@@ -1,4 +1,4 @@
-name: lint-build
+name: lint-build-test
 
 env:
   APP_NAME: "In-memory cache"

@@ -8,6 +8,8 @@ import (
 
 // TestNewCache - in-memory cache testing
 func TestNew(t *testing.T) {
+	t.Parallel()
+
 	cache := New()
 
 	tests := []struct {
@@ -43,4 +45,60 @@ func TestNew(t *testing.T) {
 			assert.Equal(t, value, nil)
 		})
 	}
+}
+
+func BenchmarkNew(b *testing.B) {
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	var cache *Cache
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache = New() // mem allocs
+		}
+	})
+
+	_ = cache
+}
+
+func BenchmarkGet(b *testing.B) {
+	cache := New()
+	cache.Set("Hello", "World")
+
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.Get("Hello")
+		}
+	})
+}
+
+func BenchmarkSet(b *testing.B) {
+	cache := New()
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.Set("Hello", "World")
+		}
+	})
+}
+
+func BenchmarkDelete(b *testing.B) {
+	cache := New()
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.Delete("Hello")
+		}
+	})
 }

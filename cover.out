@@ -1,7 +1,7 @@
-mode: set
-github.com/p12s/in-memory-cache/in-memory-cache.go:9.19,13.2 1 1
-github.com/p12s/in-memory-cache/in-memory-cache.go:16.51,18.2 1 1
-github.com/p12s/in-memory-cache/in-memory-cache.go:21.45,22.34 1 1
-github.com/p12s/in-memory-cache/in-memory-cache.go:25.2,25.12 1 1
-github.com/p12s/in-memory-cache/in-memory-cache.go:22.34,24.3 1 1
-github.com/p12s/in-memory-cache/in-memory-cache.go:29.36,31.2 1 1
+mode: atomic
+github.com/p12s/in-memory-cache/in-memory-cache.go:12.19,16.2 1 1
+github.com/p12s/in-memory-cache/in-memory-cache.go:19.51,23.2 3 9
+github.com/p12s/in-memory-cache/in-memory-cache.go:26.45,27.34 1 27
+github.com/p12s/in-memory-cache/in-memory-cache.go:30.2,30.12 1 18
+github.com/p12s/in-memory-cache/in-memory-cache.go:27.34,29.3 1 9
+github.com/p12s/in-memory-cache/in-memory-cache.go:34.36,38.2 3 9
