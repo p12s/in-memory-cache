@@ -2,6 +2,7 @@ package inmemorycache
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -30,19 +31,63 @@ func TestNew(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// key-value shouldn't exists
-			value := cache.Get(tt.key)
-			assert.Equal(t, value, nil)
+			assert.Equal(t, nil, cache.Get(tt.key))
 
 			// now key-value should exists
 			cache.Set(tt.key, tt.value)
-			value = cache.Get(tt.key)
-			assert.Equal(t, value, tt.value)
+			assert.Equal(t, tt.value, cache.Get(tt.key))
 
 			// againt, key-value shouldn't exists
 			cache.Delete(tt.key)
-			value = cache.Get(tt.key)
+			assert.Equal(t, nil, cache.Get(tt.key))
+		})
+	}
+}
 
-			assert.Equal(t, value, nil)
+func TestSetWithExpire(t *testing.T) {
+	t.Parallel()
+
+	cache := New()
+
+	tests := []struct {
+		name, key string
+		value     interface{}
+		existsSec int
+	}{
+		{"Can set the negative expiration time to -5 sec - it will be taken as 0 sec", "int", 42, -5},
+		{"Can set the expiration time to 1 sec", "int1", 42, 1},
+		{"Can set the expiration time to 2 sec", "int2", 42, 2},
+		{"Can set the expiration time to 3 sec", "int3", 42, 3},
+		{"Can set the expiration time to 4 sec", "int4", 42, 4},
+	}
+
+	for _, tt := range tests {
+
+		t.Run(tt.name, func(t *testing.T) {
+			// key-value shouldn't exists
+			assert.Equal(t, nil, cache.Get(tt.key))
+
+			// now key-value should exists (if ttl time > 0)
+			cache.SetWithExpire(tt.key, tt.value, time.Second*time.Duration(tt.existsSec))
+			if tt.existsSec > 0 {
+				assert.Equal(t, tt.value, cache.Get(tt.key))
+			} else {
+				assert.Equal(t, nil, cache.Get(tt.key))
+			}
+
+			// key-value still should exists
+			if tt.existsSec >= 0 {
+				for i := 0; i < tt.existsSec; i++ {
+					time.Sleep(time.Second * 1)
+					assert.Equal(t, tt.value, cache.Get(tt.key))
+				}
+			}
+
+			// time variation
+			time.Sleep(time.Second * 1)
+
+			// key-value shouldn't exists
+			assert.Equal(t, nil, cache.Get(tt.key))
 		})
 	}
 }
@@ -86,6 +131,19 @@ func BenchmarkSet(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			cache.Set("Hello", "World")
+		}
+	})
+}
+
+func BenchmarkSetWithExpire(b *testing.B) {
+	cache := New()
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.SetWithExpire("Hello", "World", time.Second*1)
 		}
 	})
 }
