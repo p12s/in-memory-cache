@@ -61,5 +61,6 @@ For comparison, let's take any of the package from [awesome-go](https://github.c
 |                                          	| SetWithExpire 	| 8551774    	| 134.5 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~ same     	|
 |                                          	| Get           	| 1000000000 	| 0.4748 ns/op 	| 0 B/op   	| 0 allocs/op 	| ~6 faster  	|
 |                                          	| Delete        	| 22668232   	| 52.08 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~47 slower 	|
+
 Testing on 8 cores, i9 2.30GHz.    
 Everything, except for items deleting, is no worse than in the compared package.  
