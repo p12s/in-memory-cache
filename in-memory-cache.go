@@ -11,13 +11,13 @@ type item struct {
 	expires int64
 }
 
-// Cashe
+// Cache
 type Cache struct {
 	close chan struct{}
 	items sync.Map
 }
 
-// Constructor
+// New - constructor
 func New(cleaningInterval time.Duration) *Cache {
 	cache := Cache{
 		close: make(chan struct{}),
@@ -36,7 +36,7 @@ func (c *Cache) cleanExpired(cleaningInterval time.Duration) {
 		case <-ticker.C:
 			now := time.Now().Unix()
 			c.items.Range(func(key, value interface{}) bool {
-				item := value.(item)
+				item := value.(item) //nolint
 				if item.expires != 0 && item.expires < now {
 					c.items.Delete(key)
 				}
@@ -70,7 +70,7 @@ func (c *Cache) Get(key string) interface{} {
 		return nil
 	}
 
-	item := value.(item)
+	item := value.(item) //nolint
 	if item.expires != 0 && item.expires < time.Now().Unix() {
 		return nil
 	}
