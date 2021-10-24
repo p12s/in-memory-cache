@@ -8,10 +8,12 @@
 Task description is [here](task.md)
 
 ## Performance and implementation
-This cache implementation is based on the standard go structure - map[string]interface{}.  
-In turn, the map type is based on a hash table, so we consider that **adding**, **getting** and **removing** values is performed in **constant time** (O[1]).  
-However, when the number of elements equals the capacity of the dictionary, the entire structure will be copied to a new location in memory,  
-with a 2-fold increase in capacity (on 64-bit machines, when the number reaches 2048, it will be 1.25 times).  
+This cache implementation is based on the sync.Map.  
+The solutions based on a hash table promise operations **add**, **get** and **remove** performed in **constant** (O[1]) time.  
+For this library, I initially took sync.Mutex + map[string]interface{}, however it showed problems with concurrent deletion of elements and poor performance when deleting itself.  
+At the same time sync.Map performed well in these cases (the library, which is taken for performance comparison, was based on sync.Map).   
+As a result, I choice sync.Map and I ended up with exactly the same library as the one taken as an example.  
+Loser.  
 
 ## Example
 Installation: 
@@ -48,19 +50,15 @@ func main() {
 ## Сomparison with other same solution
 For comparison, let's take any of the package from [awesome-go](https://github.com/avelino/awesome-go), for example, [In-memory cache](https://github.com/akyoto/cache).  
 
-| Package                                  	| Method        	| Quantity   	| Time         	| Size     	| Allocs      	| %          	|
-|------------------------------------------	|---------------	|------------	|--------------	|----------	|-------------	|------------	|
-| [Cache](https://github.com/akyoto/cache) 	|               	|            	|              	|          	|             	|            	|
-|                                          	| New           	| 6379844    	| 166.9 ns/op  	| 368 B/op 	| 6 allocs/op 	|            	|
-|                                          	| Set           	| 6264136    	| 192.4 ns/op  	| 40 B/op  	| 2 allocs/op 	|            	|
-|                                          	| Get           	| 420062818  	| 2.911 ns/op  	| 0 B/op   	| 0 allocs/op 	|            	|
-|                                          	| Delete        	| 855741927  	| 1.385 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~47 faster 	|
-| This package                             	|               	|            	|              	|          	|             	|            	|
-|                                          	| New           	| 37835570   	| 29.66 ns/op  	| 80 B/op  	| 2 allocs/op 	| ~5 faster  	|
-|                                          	| Set           	| 15231852   	| 77.39 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~2 faster  	|
-|                                          	| SetWithExpire 	| 8551774    	| 134.5 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~ same     	|
-|                                          	| Get           	| 1000000000 	| 0.4748 ns/op 	| 0 B/op   	| 0 allocs/op 	| ~6 faster  	|
-|                                          	| Delete        	| 22668232   	| 52.08 ns/op  	| 0 B/op   	| 0 allocs/op 	| ~47 slower 	|
-
-Testing on 8 cores, i9 2.30GHz.    
-Everything, except for items deleting, is no worse than in the compared package.  
+| Package                                  	| Method            	| quantity  	| ns/op 	| B/op 	| allocs/op 	| fast % 	|
+|------------------------------------------	|-------------------	|-----------	|-------	|------	|-----------	|--------	|
+| [Cache](https://github.com/akyoto/cache) 	|                   	|           	|       	|      	|           	|        	|
+|                                          	| New               	| 6379844   	| 166.9 	| 368  	| 6         	|        	|
+|                                          	| Set/SetWithExpire 	| 6264136   	| 192.4 	| 40   	| 2         	|        	|
+|                                          	| Get               	| 420062818 	| 2.911 	| 0    	| 0         	|        	|
+|                                          	| Delete            	| 855741927 	| 1.385 	| 0    	| 0         	|        	|
+| This package                             	|                   	|           	|       	|      	|           	|        	|
+|                                          	| New               	| 6436862   	| 175.6 	| 368  	| 6         	| ~      	|
+|                                          	| Set/SetWithExpire 	| 5521599   	| 199.7 	| 56   	| 3         	| ~      	|
+|                                          	| Get               	| 424934931 	| 2.824 	| 0    	| 0         	| ~      	|
+|                                          	| Delete            	| 842618384 	| 1.417 	| 0    	| 0         	| ~      	|
