@@ -97,11 +97,8 @@ func TestSetWithExpire(t *testing.T) {
 }
 
 func BenchmarkNew(b *testing.B) {
-
 	b.ResetTimer()
 	b.ReportAllocs()
-
-	var cache *Cache
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -109,8 +106,6 @@ func BenchmarkNew(b *testing.B) {
 			cache.Close()
 		}
 	})
-
-	_ = cache
 }
 
 func BenchmarkGet(b *testing.B) {
