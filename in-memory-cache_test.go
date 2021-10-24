@@ -11,7 +11,9 @@ import (
 func TestNew(t *testing.T) {
 	t.Parallel()
 
-	cache := New()
+	cleanExpiredPeriod := 1 * time.Second
+	cache := New(cleanExpiredPeriod)
+	defer cache.Close()
 
 	tests := []struct {
 		name, key string
@@ -47,7 +49,9 @@ func TestNew(t *testing.T) {
 func TestSetWithExpire(t *testing.T) {
 	t.Parallel()
 
-	cache := New()
+	cleanExpiredPeriod := 1 * time.Second
+	cache := New(cleanExpiredPeriod)
+	defer cache.Close()
 
 	tests := []struct {
 		name, key string
@@ -84,7 +88,7 @@ func TestSetWithExpire(t *testing.T) {
 			}
 
 			// time variation
-			time.Sleep(time.Second * 1)
+			time.Sleep(cleanExpiredPeriod)
 
 			// key-value shouldn't exists
 			assert.Equal(t, nil, cache.Get(tt.key))
@@ -101,7 +105,8 @@ func BenchmarkNew(b *testing.B) {
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			cache = New() // mem allocs
+			cache := New(time.Second)
+			cache.Close()
 		}
 	})
 
@@ -109,7 +114,7 @@ func BenchmarkNew(b *testing.B) {
 }
 
 func BenchmarkGet(b *testing.B) {
-	cache := New()
+	cache := New(time.Second)
 	cache.Set("Hello", "World")
 
 	b.ReportAllocs()
@@ -120,10 +125,12 @@ func BenchmarkGet(b *testing.B) {
 			cache.Get("Hello")
 		}
 	})
+
+	cache.Close()
 }
 
 func BenchmarkSet(b *testing.B) {
-	cache := New()
+	cache := New(time.Second)
 
 	b.ResetTimer()
 	b.ReportAllocs()
@@ -133,10 +140,12 @@ func BenchmarkSet(b *testing.B) {
 			cache.Set("Hello", "World")
 		}
 	})
+
+	cache.Close()
 }
 
 func BenchmarkSetWithExpire(b *testing.B) {
-	cache := New()
+	cache := New(time.Second)
 
 	b.ResetTimer()
 	b.ReportAllocs()
@@ -146,10 +155,13 @@ func BenchmarkSetWithExpire(b *testing.B) {
 			cache.SetWithExpire("Hello", "World", time.Second*1)
 		}
 	})
+
+	cache.Close()
 }
 
 func BenchmarkDelete(b *testing.B) {
-	cache := New()
+	cache := New(time.Second)
+	cache.Set("Hello", "World")
 
 	b.ResetTimer()
 	b.ReportAllocs()
@@ -159,4 +171,6 @@ func BenchmarkDelete(b *testing.B) {
 			cache.Delete("Hello")
 		}
 	})
+
+	cache.Close()
 }

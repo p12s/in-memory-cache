@@ -13,55 +13,78 @@ type item struct {
 
 // Cashe
 type Cache struct {
-	mu    sync.Mutex // TODO need to experiment with: sync.Map RWMutex
-	items map[string]item
+	close chan struct{}
+	items sync.Map
 }
 
 // Constructor
-func New() *Cache {
-	return &Cache{
-		items: make(map[string]item),
+func New(cleaningInterval time.Duration) *Cache {
+	cache := Cache{
+		close: make(chan struct{}),
+	}
+	go cache.cleanExpired(cleaningInterval)
+	return &cache
+}
+
+// cleanExpired - removing expired cache cleaning loop
+func (c *Cache) cleanExpired(cleaningInterval time.Duration) {
+	ticker := time.NewTicker(cleaningInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			now := time.Now().Unix()
+			c.items.Range(func(key, value interface{}) bool {
+				item := value.(item)
+				if item.expires != 0 && item.expires < now {
+					c.items.Delete(key)
+				}
+				return true
+			})
+		case <-c.close:
+			return
+		}
 	}
 }
 
 // Set - add value to cache
 func (c *Cache) Set(key string, value interface{}) {
-	c.mu.Lock()
-	c.items[key] = item{
+	c.items.Store(key, item{
 		data: value,
-	}
-	c.mu.Unlock() // without defer, because it's add overhead ~200 ns
+	})
 }
 
 // SetWithExpire - add value to cache with expiting time
 func (c *Cache) SetWithExpire(key string, value interface{}, ttl time.Duration) {
-	c.mu.Lock()
-	c.items[key] = item{
+	c.items.Store(key, item{
 		data:    value,
 		expires: time.Now().Add(ttl).Unix(),
-	}
-	c.mu.Unlock()
+	})
 }
 
 // Get - get value from cache
 func (c *Cache) Get(key string) interface{} {
-	if _, ok := c.items[key]; !ok {
+	value, exists := c.items.Load(key)
+	if !exists {
 		return nil
 	}
 
-	if c.items[key].expires != 0 && c.items[key].expires < time.Now().Unix() {
-		c.mu.Lock()
-		delete(c.items, key)
-		c.mu.Unlock()
+	item := value.(item)
+	if item.expires != 0 && item.expires < time.Now().Unix() {
 		return nil
 	}
 
-	return c.items[key].data
+	return item.data
 }
 
 // Delete - remove value from cache
 func (c *Cache) Delete(key string) {
-	c.mu.Lock()
-	delete(c.items, key)
-	c.mu.Unlock()
+	c.items.Delete(key)
+}
+
+// Close - removing expired cache cleaning loop and all cache items
+func (c *Cache) Close() {
+	c.close <- struct{}{}
+	c.items = sync.Map{}
 }
