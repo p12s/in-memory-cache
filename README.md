@@ -17,11 +17,11 @@ Loser.
 
 ## Example
 Installation: 
-```
+```go
 go get -u github.com/p12s/in-memory-cache
 ```
 Using:
-```
+```go
 package main
 
 import (
