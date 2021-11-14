@@ -31,7 +31,8 @@ import (
 )
 
 func main() {
-	cache := cache.New()
+	cleanExpiredPeriod := 1 * time.Second
+	cache := cache.New(cleanExpiredPeriod)
 	fmt.Println(cache.Get("userId"))	// doesn't exist - return "nil"
 
 	cache.Set("userId", 42)
